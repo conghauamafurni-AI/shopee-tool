@@ -1,10 +1,15 @@
 from fastapi import FastAPI, File, UploadFile, Form
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.templating import Jinja2Templates
+from fastapi.requests import Request
 from openai import OpenAI
 from PIL import Image, ImageDraw, ImageFont
 import requests, os, zipfile, uuid
 
 app = FastAPI()
+
+# 👉 thêm templates
+templates = Jinja2Templates(directory="templates")
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 REMOVE_BG_KEY = os.getenv("REMOVE_BG_KEY")
@@ -73,6 +78,7 @@ def combine(product, bg, out, text):
     draw_text(bg, text)
     bg.save(out, quality=95)
 
+# 👉 API xử lý ảnh
 @app.post("/process")
 async def process(files: list[UploadFile] = File(...), name: str = Form(...)):
     job_id = str(uuid.uuid4())
@@ -105,3 +111,8 @@ async def process(files: list[UploadFile] = File(...), name: str = Form(...)):
             zipf.write(img, os.path.basename(img))
 
     return FileResponse(zip_path, filename="shopee_images.zip")
+
+# 👉 GIAO DIỆN WEB (QUAN TRỌNG)
+@app.get("/", response_class=HTMLResponse)
+def home(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
