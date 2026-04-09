@@ -96,7 +96,7 @@ async def process(files: list[UploadFile] = File(...), name: str = Form(...)):
         removed = f"{job_folder}/clean.png"
         remove_bg(input_path, removed)
 
-        for i, (title, prompt) in enumerate(concepts):
+        for i, (title, prompt) in enumerate(concepts[:3]):
             bg = f"{job_folder}/bg_{i}.png"
             out = f"{job_folder}/{file.filename}_{i}.png"
 
