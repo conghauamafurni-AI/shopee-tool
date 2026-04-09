@@ -1,17 +1,79 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Shopee Tool</title>
+    <title>Shopee Image Tool PRO</title>
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            background: #111;
+            color: white;
+        }
+
+        .box {
+            margin-top: 50px;
+        }
+
+        input, button {
+            padding: 10px;
+            margin: 10px;
+        }
+
+        button {
+            background: orange;
+            border: none;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .loading {
+            display: none;
+            color: yellow;
+        }
+    </style>
 </head>
-<body style="text-align:center; font-family:Arial;">
+<body>
 
-    <h2>Tạo 9 ảnh Shopee</h2>
+    <h1>🚀 Shopee Image Generator PRO</h1>
 
-    <form action="/process" method="post" enctype="multipart/form-data">
-        <input type="file" name="files" multiple required><br><br>
-        <input type="text" name="name" placeholder="Tên sản phẩm"><br><br>
-        <button type="submit">TẠO ẢNH</button>
-    </form>
+    <div class="box">
+        <form id="form">
+            <input type="file" name="files" multiple required><br>
+            <input type="text" name="name" placeholder="Tên sản phẩm" required><br>
+            <button type="submit">TẠO ẢNH</button>
+        </form>
+
+        <p class="loading" id="loading">⏳ Đang xử lý... (10-30s)</p>
+    </div>
+
+    <script>
+        const form = document.getElementById("form");
+        const loading = document.getElementById("loading");
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            loading.style.display = "block";
+
+            const formData = new FormData(form);
+
+            const response = await fetch("/process", {
+                method: "POST",
+                body: formData
+            });
+
+            const blob = await response.blob();
+
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "shopee_images.zip";
+            a.click();
+
+            loading.style.display = "none";
+        });
+    </script>
 
 </body>
 </html>
